@@ -4,7 +4,7 @@
   "description": "hexlet pet project 3",
   "main": "index.js",
   "scripts": {
-    "build": "webpack",
+    "build": "npx webpack",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "anndudek",
