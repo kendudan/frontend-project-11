@@ -8,24 +8,34 @@ const state = {
     rssForm: {
         value: '',
         valid: null,
-        errors: [],
+        values: [],
+        error: '',
     }
 };
 
 const form = document.querySelector('form.rss-form.text-body');
 const input = document.getElementById('url-input');
 
+let shema = yup.string().url('Ссылка должна быть валидным URL').required().notOneOf(state.rssForm.values, 'RSS уже существует');
+
 const watchedState = onChange(state, (path, value) => {
+    const error = state.rssForm.error;
+    const err = error.toString();
     switch (path) {
         case 'rssForm.valid':
-          render(input, value);
+          render(input, value, err);
           break;
+        case 'rssForm.error':
+          render(input, false, value);
+          break;
+        case 'rssForm.values':
+          shema = yup.string().url('Ссылка должна быть валидным URL').required().notOneOf(state.rssForm.values, 'RSS уже существует');
         default:
           break;
       }
 });
 
-const shema = yup.string().url('Ссылка должна быть валидным URL').required();
+
 
 const handleSubmit = (e) => {
     e.preventDefault();
@@ -35,13 +45,13 @@ const handleSubmit = (e) => {
     .validate(state.rssForm.value)
     .then(() => {
         watchedState.rssForm.valid = true;
-        console.log(state.rssForm.valid);
+        watchedState.rssForm.values.push(state.rssForm.value);
+        e.target.reset();
+        input.focus();
     })
     .catch((err) => {
-        console.log(err.name);
-        console.log(err.errors);
         watchedState.rssForm.valid = false;
-        console.log(state.rssForm.valid);
+        watchedState.rssForm.error = err.errors;
     });
 };
 
