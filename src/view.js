@@ -1,7 +1,7 @@
 import  './styles.scss';
 import  'bootstrap';
 
-const render = (element, value, error) => {
+const render = (element, value, feedback, i18n) => {
     const parent = document.getElementById('parent');
 
     if (value === true) {
@@ -12,7 +12,7 @@ const render = (element, value, error) => {
         }
         
         const positiveFeedback = document.createElement('p');
-        positiveFeedback.textContent = 'RSS успешно загружен';
+        positiveFeedback.textContent = i18n.t(feedback.key);
         positiveFeedback.className = 'feedback m-0 position-absolute small text-success';
         positiveFeedback.setAttribute('id', 'positive');
         parent.append(positiveFeedback);
@@ -26,7 +26,7 @@ const render = (element, value, error) => {
         }
     
         const negativeFeedback = document.createElement('p');
-        negativeFeedback.textContent = error;
+        negativeFeedback.textContent = i18n.t(feedback.key);
         negativeFeedback.className = 'feedback m-0 position-absolute small text-success text-danger';
         negativeFeedback.setAttribute('id', 'negative');
         parent.append(negativeFeedback);
