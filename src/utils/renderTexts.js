@@ -4,5 +4,4 @@ export default (i18n, elements) => {
     elements.placeholder.textContent = i18n.t('placeholder');
     elements.button.textContent = i18n.t('button');
     elements.example.textContent = i18n.t('example');
-
 }

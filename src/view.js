@@ -1,14 +1,16 @@
 import  './styles.scss';
 import  'bootstrap';
 
-const render = (element, value, feedback, i18n) => {
+const renderFeedback = (element, value, feedback, i18n) => {
     const parent = document.getElementById('parent');
 
-    if (value === true) {
+    if (value === true || feedback.key === 'feedback.loading') {
         element.classList.remove('is-invalid');
 
         if (document.getElementById('negative') !== null) {
             document.getElementById('negative').remove();
+        } else if (document.getElementById('positive') !== null) {
+            document.getElementById('positive').remove();
         }
         
         const positiveFeedback = document.createElement('p');
@@ -17,7 +19,9 @@ const render = (element, value, feedback, i18n) => {
         positiveFeedback.setAttribute('id', 'positive');
         parent.append(positiveFeedback);
     } else {
-        element.classList.add('is-invalid');
+        if (feedback.key !== 'feedback.networkError') {
+            element.classList.add('is-invalid');
+        }
 
         if (document.getElementById('positive') !== null) {
             document.getElementById('positive').remove();
@@ -34,4 +38,63 @@ const render = (element, value, feedback, i18n) => {
     }
 };
 
-export default render;
+const renderFeedsAndPosts = (state) => {
+    const feedsContainer = document.querySelector('.feeds');
+    feedsContainer.innerHTML = '';
+    if (state.parsedData.feeds.length === 0 && state.parsedData.posts.length === 0) {
+        console.log('tyt');
+        const loadingContainer = document.createElement('div');
+        feedsContainer.append(loadingContainer);
+        const loading = document.createElement('p');
+        loading.textContent = 'Загрузка';
+        loadingContainer.append(loading);
+    }
+    const card = document.createElement('div');
+    card.classList.add('card-body');
+    const feedsHeader = document.createElement('h2');
+    feedsHeader.classList.add('card-title', 'h4');
+    feedsHeader.textContent = "Фиды";
+    card.append(feedsHeader);
+    const feedsList = document.createElement('ul');
+    feedsList.classList.add('list-group', 'border-0', 'rounded-0');
+    feedsContainer.append(card, feedsList);
+    const feedElement = document.createElement('li');
+    feedElement.classList.add('list-group-item', 'border-0', 'border-end-0');
+    feedsList.append(feedElement);
+    state.parsedData.feeds.forEach((feed) => {
+        const feedName = document.createElement('h3');
+        feedName.classList.add('h6', 'm-0');
+        feedName.textContent = feed.title;
+        const feedDescription = document.createElement('p');
+        feedDescription.classList.add('m-0', 'small', 'text-black-50');
+        feedDescription.textContent = feed.description;
+        feedElement.append(feedName, feedDescription);
+    });
+    const postsContainer = document.querySelector('.posts');
+    postsContainer.innerHTML = '';
+    const postCard = document.createElement('div');
+    postCard.classList.add('card-body');
+    const postsHeader = document.createElement('h2');
+    postsHeader.classList.add('card-title', 'h4');
+    postsHeader.textContent = "Посты";
+    postCard.append(postsHeader);
+    const postsList = document.createElement('ul');
+    postsList.classList.add('list-group', 'border-0', 'rounded-0');
+    postsContainer.append(postCard, postsList);
+    const postElement = document.createElement('li');
+    postElement.classList.add('list-group-item', 'border-0', 'border-end-0');
+    postsList.append(postElement);
+    state.parsedData.posts.forEach((post) => {
+        const postName = document.createElement('a');
+        postName.classList.add('list-group-item', 'd-flex', 'align-items-start', 'border-0', 'border-end-0');
+        postName.setAttribute('href', post.link);
+        postName.dataset.id = post.id;
+        postName.setAttribute('target', '_blank');
+        postName.setAttribute('rel', 'noopener noreferrer');
+        postName.textContent = post.title;
+        postElement.append(postName);
+    });
+    
+};
+
+export { renderFeedback, renderFeedsAndPosts };
