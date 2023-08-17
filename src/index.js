@@ -25,7 +25,7 @@ const state = {
     rssForm: {
         value: '',
         valid: null,
-        values: [],
+        channels: [],
         feedback: '',
         processState: 'filling',
     },
@@ -49,7 +49,7 @@ yup.setLocale({
     },
 });
 
-let shema = yup.string().url().required().notOneOf(state.rssForm.values);
+let shema = yup.string().url().required().notOneOf(state.rssForm.channels);
 
 const watchedState = onChange(state, (path, value, prevValue) => {
     const valid = state.rssForm.valid;
@@ -57,8 +57,8 @@ const watchedState = onChange(state, (path, value, prevValue) => {
         case 'rssForm.feedback':
           renderFeedback(input, valid, value, i18nInstance);
           break;
-        case 'rssForm.values':
-          shema = yup.string().url().required().notOneOf(state.rssForm.values);
+        case 'rssForm.channels':
+          shema = yup.string().url().required().notOneOf(state.rssForm.channels);
           break;
         case 'parsedData.posts':
           renderFeedsAndPosts(state);
@@ -90,7 +90,7 @@ const prepareData = (url) => {
             watchedState.parsedData.feeds = [feed, ...watchedState.parsedData.feeds];
             watchedState.parsedData.posts = [...posts, ...watchedState.parsedData.posts];
         }
-        watchedState.rssForm.values.push(state.rssForm.value);
+        watchedState.rssForm.channels.push(state.rssForm.value);
         watchedState.rssForm.processState = 'filling';
     })
     .catch(() => {
@@ -98,8 +98,24 @@ const prepareData = (url) => {
         watchedState.rssForm.processState = 'error';
         watchedState.rssForm.feedback = { key: 'feedback.networkError' };
       })
-    
-}
+};
+
+const updateData = (channels) => {
+  const promises = channels.map(channel => loadData(channel)
+    .then((response) => {
+      const [feed, posts] = parseData(response);
+      const feedForUpdate = state.parsedData.feeds.find((element) => element.title === feed.title);
+      const loadedPosts = state.parsedData.posts.filter((post) => post.feedId === feedForUpdate.id);
+      const newPosts = _.differenceBy(posts, loadedPosts, 'link');
+      if (newPosts.length !== 0) {
+        newPosts.map((post) => { post.id = _.uniqueId, post.feedId = feedForUpdate.id });
+        watchedState.parsedData.posts = [...newPosts, ...watchedState.parsedData.posts];
+      }
+    })
+    .catch(console.error)
+  );
+  Promise.all(promises).finally(() => setTimeout(() => updateData(state.rssForm.channels), 5000));
+};
 
 const handleProcessState = (element, processState) => {
     switch (processState) {
@@ -122,7 +138,7 @@ const handleProcessState = (element, processState) => {
       default:
         throw new Error(`Unknown process state: ${processState}`);
     }
-  };
+};
 
 const handleSubmit = (e) => {
     e.preventDefault();
@@ -143,6 +159,8 @@ const handleSubmit = (e) => {
         console.log(err);
         watchedState.rssForm.feedback = err.errors[0];
     });
+
+    setTimeout(() => updateData(state.rssForm.channels), 5000);
 };
 
 form.addEventListener('submit', handleSubmit);
