@@ -5,7 +5,7 @@ import i18next from 'i18next';
 import _ from 'lodash';
 import onChange from 'on-change';
 import loadData from './utils/loadData';
-import { renderFeedback, renderFeedsAndPosts } from './view';
+import { renderFeedback, renderFeedsAndPosts, renderModal } from './view';
 import resources from './locales/index';
 import renderTexts from './utils/renderTexts';
 import elements from './elements';
@@ -33,12 +33,14 @@ const state = {
         feeds: [],
         posts: [],
     },
+    viewedPosts: new Set(),
     
 };
 
 const form = document.querySelector('form.rss-form.text-body');
 const input = document.getElementById('url-input');
 const submitButton = document.querySelector('button[type="submit"]');
+const postsContainer = document.querySelector('.posts');
 
 yup.setLocale({
     mixed: {
@@ -66,6 +68,8 @@ const watchedState = onChange(state, (path, value, prevValue) => {
         case 'rssForm.processState':
           handleProcessState(submitButton, value);
           break;
+        case 'viewedPosts':
+          renderFeedsAndPosts(state);
         default:
           break;
       }
@@ -89,6 +93,7 @@ const prepareData = (url) => {
             watchedState.rssForm.processState = 'sent';
             watchedState.parsedData.feeds = [feed, ...watchedState.parsedData.feeds];
             watchedState.parsedData.posts = [...posts, ...watchedState.parsedData.posts];
+            console.log(state.parsedData.posts);
         }
         watchedState.rssForm.channels.push(state.rssForm.value);
         watchedState.rssForm.processState = 'filling';
@@ -164,4 +169,14 @@ const handleSubmit = (e) => {
 };
 
 form.addEventListener('submit', handleSubmit);
+
+const handleClick = (e) => {
+  const { id } = e.target.dataset;
+  if (e.target.closest('button')) {
+    renderModal(state.parsedData.posts, id, i18nInstance);
+  }
+  watchedState.viewedPosts.add(id);
+}
+
+postsContainer.addEventListener('click', handleClick);
 

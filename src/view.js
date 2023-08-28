@@ -81,20 +81,41 @@ const renderFeedsAndPosts = (state) => {
     const postsList = document.createElement('ul');
     postsList.classList.add('list-group', 'border-0', 'rounded-0');
     postsContainer.append(postCard, postsList);
-    const postElement = document.createElement('li');
-    postElement.classList.add('list-group-item', 'border-0', 'border-end-0');
-    postsList.append(postElement);
     state.parsedData.posts.forEach((post) => {
+        const postElement = document.createElement('li');
+        postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
+        postsList.append(postElement);
         const postName = document.createElement('a');
-        postName.classList.add('list-group-item', 'd-flex', 'align-items-start', 'border-0', 'border-end-0');
+        const classForPostName = state.viewedPosts.has(post.id) ? 'fw-normal' : 'fw-bold';
+        postName.classList.add(classForPostName);
         postName.setAttribute('href', post.link);
         postName.dataset.id = post.id;
         postName.setAttribute('target', '_blank');
         postName.setAttribute('rel', 'noopener noreferrer');
         postName.textContent = post.title;
         postElement.append(postName);
+        const postButton = document.createElement('button');
+        postButton.setAttribute('type', 'button');
+        postButton.classList.add('btn', 'btn-outline-primary');
+        postButton.setAttribute('data-bs-toggle', 'modal');
+        postButton.setAttribute('data-bs-target', '#modal');
+        postButton.textContent = 'Просмотр';
+        postButton.dataset.id = post.id;
+        postElement.append(postButton);
     });
-    
 };
 
-export { renderFeedback, renderFeedsAndPosts };
+const renderModal = (posts, id, i18n) => {
+    const post = posts.find((item) => item.id === id);
+    const modalTitle = document.getElementById('modalLabel');
+        modalTitle.textContent = post.title;
+        const modalBody = document.querySelector('.modal-body');
+        modalBody.textContent = post.description;
+        const buttonReadMore = document.getElementById('readMore');
+        buttonReadMore.setAttribute('href', post.link);
+        buttonReadMore.textContent = i18n.t('modalButtons.readMore');
+        const buttonClose = document.getElementById('close');
+        buttonClose.textContent = i18n.t('modalButtons.close');
+};
+
+export { renderFeedback, renderFeedsAndPosts, renderModal };

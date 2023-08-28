@@ -14,5 +14,9 @@ export default {
             loading: 'Идет загрузка',
             loaded: 'RSS успешно загружен',
         },
+        modalButtons: {
+            readMore: 'Читать полностью',
+            close: 'Закрыть',
+        },
     },
 };
