@@ -38,7 +38,7 @@ const renderFeedback = (element, value, feedback, i18n) => {
     }
 };
 
-const renderFeedsAndPosts = (state) => {
+const renderFeedsAndPosts = (state, i18n) => {
     const feedsContainer = document.querySelector('.feeds');
     feedsContainer.innerHTML = '';
     if (state.parsedData.feeds.length === 0 && state.parsedData.posts.length === 0) {
@@ -99,7 +99,7 @@ const renderFeedsAndPosts = (state) => {
         postButton.classList.add('btn', 'btn-outline-primary');
         postButton.setAttribute('data-bs-toggle', 'modal');
         postButton.setAttribute('data-bs-target', '#modal');
-        postButton.textContent = 'Просмотр';
+        postButton.textContent = i18n.t('watchButton');
         postButton.dataset.id = post.id;
         postElement.append(postButton);
     });

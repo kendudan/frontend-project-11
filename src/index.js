@@ -63,7 +63,7 @@ const watchedState = onChange(state, (path, value, prevValue) => {
           shema = yup.string().url().required().notOneOf(state.rssForm.channels);
           break;
         case 'parsedData.posts':
-          renderFeedsAndPosts(state);
+          renderFeedsAndPosts(state, i18nInstance);
           break;
         case 'rssForm.processState':
           handleProcessState(submitButton, value);

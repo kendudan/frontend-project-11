@@ -18,5 +18,6 @@ export default {
             readMore: 'Читать полностью',
             close: 'Закрыть',
         },
+        watchButton: 'Просмотр',
     },
 };
