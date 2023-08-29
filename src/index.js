@@ -98,10 +98,16 @@ const prepareData = (url) => {
         watchedState.rssForm.channels.push(state.rssForm.value);
         watchedState.rssForm.processState = 'filling';
     })
-    .catch(() => {
+    .catch((error) => {
+        console.log(error);
+        console.log(error.message === 'Parsing Error');
         watchedState.rssForm.valid = false;
         watchedState.rssForm.processState = 'error';
-        watchedState.rssForm.feedback = { key: 'feedback.networkError' };
+        if (error.message === 'Parsing Error') {
+          watchedState.rssForm.feedback = { key: 'feedback.notValidRSS' };
+        } else {
+          watchedState.rssForm.feedback = { key: 'feedback.networkError' };
+        }
       })
 };
 

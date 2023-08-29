@@ -13,6 +13,7 @@ export default {
             networkError: 'Ошибка сети',
             loading: 'Идет загрузка',
             loaded: 'RSS успешно загружен',
+            notValidRSS: 'Ресурс не содержит валидный RSS',
         },
         modalButtons: {
             readMore: 'Читать полностью',
