@@ -10,6 +10,7 @@ export default {
             invalid: {
                 invalidURL: 'Ссылка должна быть валидным URL',
                 alreadyExist: 'RSS уже существует',
+                notEmpty: 'Не должно быть пустым',
             },
             networkError: 'Ошибка сети',
             loading: 'Идет загрузка',

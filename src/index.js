@@ -45,6 +45,7 @@ const postsContainer = document.querySelector('.posts');
 yup.setLocale({
     mixed: {
         notOneOf: () => ({ key: 'feedback.invalid.alreadyExist' }),
+        required: () => ({ key: 'feedback.invalid.notEmpty' }),
     },
     string: {
         url: () => ({ key: 'feedback.invalid.invalidURL' }),
