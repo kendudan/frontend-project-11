@@ -53,7 +53,7 @@ yup.setLocale({
 
 let shema = yup.string().url().required().notOneOf(state.rssForm.channels);
 
-const watchedState = onChange(state, (path, value, prevValue) => {
+const watchedState = onChange(state, (path, value) => {
     const valid = state.rssForm.valid;
     switch (path) {
         case 'rssForm.feedback':
@@ -63,13 +63,12 @@ const watchedState = onChange(state, (path, value, prevValue) => {
           shema = yup.string().url().required().notOneOf(state.rssForm.channels);
           break;
         case 'parsedData.posts':
+        case 'viewedPosts':
           renderFeedsAndPosts(state, i18nInstance);
           break;
         case 'rssForm.processState':
           handleProcessState(submitButton, value);
           break;
-        case 'viewedPosts':
-          renderFeedsAndPosts(state);
         default:
           break;
       }
@@ -88,19 +87,15 @@ const prepareData = (url) => {
         if (_.isEmpty(feed) && posts.length === 0) {
             watchedState.rssForm.valid = false;
         } else if (!_.isEmpty(feed) && posts.length !== 0) {
-            console.log('in');
             watchedState.rssForm.valid = true;
             watchedState.rssForm.processState = 'sent';
             watchedState.parsedData.feeds = [feed, ...watchedState.parsedData.feeds];
             watchedState.parsedData.posts = [...posts, ...watchedState.parsedData.posts];
-            console.log(state.parsedData.posts);
         }
         watchedState.rssForm.channels.push(state.rssForm.value);
         watchedState.rssForm.processState = 'filling';
     })
     .catch((error) => {
-        console.log(error);
-        console.log(error.message === 'Parsing Error');
         watchedState.rssForm.valid = false;
         watchedState.rssForm.processState = 'error';
         if (error.message === 'Parsing Error') {
@@ -177,6 +172,7 @@ const handleSubmit = (e) => {
 form.addEventListener('submit', handleSubmit);
 
 const handleClick = (e) => {
+  e.preventDefault();
   const { id } = e.target.dataset;
   if (e.target.closest('button')) {
     renderModal(state.parsedData.posts, id, i18nInstance);

@@ -84,7 +84,6 @@ const renderFeedsAndPosts = (state, i18n) => {
     state.parsedData.posts.forEach((post) => {
         const postElement = document.createElement('li');
         postElement.classList.add('list-group-item', 'd-flex', 'justify-content-between', 'align-items-start', 'border-0', 'border-end-0');
-        postsList.append(postElement);
         const postName = document.createElement('a');
         const classForPostName = state.viewedPosts.has(post.id) ? 'fw-normal' : 'fw-bold';
         postName.classList.add(classForPostName);
@@ -97,11 +96,15 @@ const renderFeedsAndPosts = (state, i18n) => {
         const postButton = document.createElement('button');
         postButton.setAttribute('type', 'button');
         postButton.classList.add('btn', 'btn-outline-primary');
-        postButton.setAttribute('data-bs-toggle', 'modal');
-        postButton.setAttribute('data-bs-target', '#modal');
+        postButton.dataset.bsToggle = 'modal';
+        postButton.dataset.bsTarget = '#modal';
+        //console.log(i18n.t('watchButton'));
         postButton.textContent = i18n.t('watchButton');
+        //console.log(postButton.textContent);
         postButton.dataset.id = post.id;
         postElement.append(postButton);
+
+        postsList.append(postElement);
     });
 };
 
