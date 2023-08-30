@@ -54,10 +54,9 @@ yup.setLocale({
 let shema = yup.string().url().required().notOneOf(state.rssForm.channels);
 
 const watchedState = onChange(state, (path, value) => {
-  const valid = state.rssForm.valid;
   switch (path) {
     case 'rssForm.feedback':
-      renderFeedback(input, valid, value, i18nInstance);
+      renderFeedback(input, state.rssForm.valid, value, i18nInstance);
       break;
     case 'rssForm.channels':
       shema = yup.string().url().required().notOneOf(state.rssForm.channels);
@@ -102,10 +101,7 @@ const prepareData = (url) => {
     .then((response) => {
       const [feed, posts] = parseData(response);
       feed.id = _.uniqueId();
-      posts.map((post) => {
-        post.id = _.uniqueId();
-        post.feedId = feed.id;
-      });
+      posts.map((post) => ({ ...post, id: _.uniqueId(), feedId: feed.id }));
       if (_.isEmpty(feed) && posts.length === 0) {
         watchedState.rssForm.valid = false;
       } else if (!_.isEmpty(feed) && posts.length !== 0) {
@@ -116,8 +112,8 @@ const prepareData = (url) => {
       }
       watchedState.rssForm.channels.push(state.rssForm.value);
       watchedState.rssForm.processState = 'filling';
-  })
-  .catch((error) => {
+    })
+    .catch((error) => {
       watchedState.rssForm.valid = false;
       watchedState.rssForm.processState = 'error';
       if (error.message === 'Parsing Error') {
@@ -140,8 +136,7 @@ const updateData = (channels) => {
         watchedState.parsedData.posts = [...newPosts, ...watchedState.parsedData.posts];
       }
     })
-    .catch(console.error)
-  );
+    .catch(console.error));
   Promise.all(promises).finally(() => setTimeout(() => updateData(state.rssForm.channels), 5000));
 };
 
