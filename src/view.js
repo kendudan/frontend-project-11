@@ -39,7 +39,6 @@ const renderFeedsAndPosts = (state, i18n) => {
   const feedsContainer = document.querySelector('.feeds');
   feedsContainer.innerHTML = '';
   if (state.parsedData.feeds.length === 0 && state.parsedData.posts.length === 0) {
-    console.log('tyt');
     const loadingContainer = document.createElement('div');
     feedsContainer.append(loadingContainer);
     const loading = document.createElement('p');
