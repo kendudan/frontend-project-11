@@ -53,6 +53,25 @@ yup.setLocale({
 
 let shema = yup.string().url().required().notOneOf(state.rssForm.channels);
 
+const handleProcessState = (element, processState) => {
+  switch (processState) {
+    case 'error':
+      element.disabled = false;
+      break;
+
+    case 'sending':
+      element.disabled = true;
+      break;
+
+    case 'filling':
+      element.disabled = false;
+      break;
+
+    default:
+      throw new Error(`Unknown process state: ${processState}`);
+  }
+};
+
 const watchedState = onChange(state, (path, value) => {
   switch (path) {
     case 'rssForm.feedback':
@@ -73,29 +92,6 @@ const watchedState = onChange(state, (path, value) => {
   }
 });
 
-const handleProcessState = (element, processState) => {
-  switch (processState) {
-    case 'sent':
-      watchedState.rssForm.feedback = { key: 'feedback.loaded' };
-      break;
-
-    case 'error':
-      element.disabled = false;
-      break;
-
-    case 'sending':
-      element.disabled = true;
-      break;
-
-    case 'filling':
-      element.disabled = false;
-      break;
-
-    default:
-      throw new Error(`Unknown process state: ${processState}`);
-  }
-};
-
 const prepareData = (url) => {
   loadData(url)
     .then((response) => {
@@ -106,7 +102,7 @@ const prepareData = (url) => {
         watchedState.rssForm.valid = false;
       } else if (!_.isEmpty(feed) && newPosts.length !== 0) {
         watchedState.rssForm.valid = true;
-        watchedState.rssForm.processState = 'sent';
+        watchedState.rssForm.feedback = { key: 'feedback.loaded' };
         watchedState.parsedData.feeds = [feed, ...watchedState.parsedData.feeds];
         watchedState.parsedData.posts = [...newPosts, ...watchedState.parsedData.posts];
       }
@@ -132,8 +128,8 @@ const updateData = (channels) => {
       const loadedPosts = state.parsedData.posts.filter((post) => post.feedId === feedForUpdate.id);
       const newPosts = _.differenceBy(posts, loadedPosts, 'link');
       if (newPosts.length !== 0) {
-        const mappedNewPosts = newPosts.map((post) => ({ ...post, id: _.uniqueId, feedId: feedForUpdate.id }));
-        watchedState.parsedData.posts = [...mappedNewPosts, ...watchedState.parsedData.posts];
+        const NeP = newPosts.map((post) => ({ ...post, id: _.uniqueId, feedId: feedForUpdate.id }));
+        watchedState.parsedData.posts = [...NeP, ...watchedState.parsedData.posts];
       }
     })
     .catch(console.error));
