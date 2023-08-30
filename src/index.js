@@ -53,6 +53,27 @@ yup.setLocale({
 
 let shema = yup.string().url().required().notOneOf(state.rssForm.channels);
 
+const watchedState = onChange(state, (path, value) => {
+  const valid = state.rssForm.valid;
+  switch (path) {
+    case 'rssForm.feedback':
+      renderFeedback(input, valid, value, i18nInstance);
+      break;
+    case 'rssForm.channels':
+      shema = yup.string().url().required().notOneOf(state.rssForm.channels);
+      break;
+    case 'parsedData.posts':
+    case 'viewedPosts':
+      renderFeedsAndPosts(state, i18nInstance);
+      break;
+    case 'rssForm.processState':
+      handleProcessState(submitButton, value);
+      break;
+    default:
+      break;
+  }
+});
+
 const handleProcessState = (element, processState) => {
   switch (processState) {
     case 'sent':
@@ -76,43 +97,22 @@ const handleProcessState = (element, processState) => {
   }
 };
 
-const watchedState = onChange(state, (path, value) => {
-  const valid  = state.rssForm.valid;
-  switch (path) {
-    case 'rssForm.feedback':
-      renderFeedback(input, valid, value, i18nInstance);
-      break;
-    case 'rssForm.channels':
-      shema = yup.string().url().required().notOneOf(state.rssForm.channels);
-      break;
-    case 'parsedData.posts':
-    case 'viewedPosts':
-      renderFeedsAndPosts(state, i18nInstance);
-      break;
-    case 'rssForm.processState':
-      handleProcessState(submitButton, value);
-      break;
-    default:
-      break;
-  }
-});
-
 const prepareData = (url) => {
   loadData(url)
-  .then((response) => {
+    .then((response) => {
       const [feed, posts] = parseData(response);
       feed.id = _.uniqueId();
       posts.map((post) => {
-          post.id = _.uniqueId();
-          post.feedId = feed.id;
+        post.id = _.uniqueId();
+        post.feedId = feed.id;
       });
       if (_.isEmpty(feed) && posts.length === 0) {
-          watchedState.rssForm.valid = false;
+        watchedState.rssForm.valid = false;
       } else if (!_.isEmpty(feed) && posts.length !== 0) {
-          watchedState.rssForm.valid = true;
-          watchedState.rssForm.processState = 'sent';
-          watchedState.parsedData.feeds = [feed, ...watchedState.parsedData.feeds];
-          watchedState.parsedData.posts = [...posts, ...watchedState.parsedData.posts];
+        watchedState.rssForm.valid = true;
+        watchedState.rssForm.processState = 'sent';
+        watchedState.parsedData.feeds = [feed, ...watchedState.parsedData.feeds];
+        watchedState.parsedData.posts = [...posts, ...watchedState.parsedData.posts];
       }
       watchedState.rssForm.channels.push(state.rssForm.value);
       watchedState.rssForm.processState = 'filling';
@@ -129,7 +129,7 @@ const prepareData = (url) => {
 };
 
 const updateData = (channels) => {
-  const promises = channels.map(channel => loadData(channel)
+  const promises = channels.map((channel) => loadData(channel)
     .then((response) => {
       const [feed, posts] = parseData(response);
       const feedForUpdate = state.parsedData.feeds.find((element) => element.title === feed.title);
@@ -150,20 +150,20 @@ const handleSubmit = (e) => {
   const formData = new FormData(e.target);
   state.rssForm.value = formData.get('url');
   shema
-  .validate(state.rssForm.value)
-  .then((rss) => {
+    .validate(state.rssForm.value)
+    .then((rss) => {
       watchedState.rssForm.processState = 'sending';
       watchedState.rssForm.feedback = { key: 'feedback.loading' };
       e.target.reset();
       input.focus();
       prepareData(rss);
-  })
-  .catch((err) => {
+    })
+    .catch((err) => {
       watchedState.rssForm.valid = false;
       watchedState.rssForm.processState = 'error';
       console.log(err);
       watchedState.rssForm.feedback = err.errors[0];
-  });
+    });
 
   setTimeout(() => updateData(state.rssForm.channels), 5000);
 };
@@ -177,7 +177,6 @@ const handleClick = (e) => {
     renderModal(state.parsedData.posts, id, i18nInstance);
   }
   watchedState.viewedPosts.add(id);
-}
+};
 
 postsContainer.addEventListener('click', handleClick);
-
