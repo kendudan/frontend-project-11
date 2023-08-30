@@ -77,7 +77,7 @@ const handleProcessState = (element, processState) => {
 };
 
 const watchedState = onChange(state, (path, value) => {
-  const { valid } = state.rssForm.valid;
+  const valid  = state.rssForm.valid;
   switch (path) {
     case 'rssForm.feedback':
       renderFeedback(input, valid, value, i18nInstance);
