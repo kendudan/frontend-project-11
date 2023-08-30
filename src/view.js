@@ -8,9 +8,9 @@ const renderFeedback = (element, value, feedback, i18n) => {
     element.classList.remove('is-invalid');
 
     if (document.getElementById('negative') !== null) {
-        document.getElementById('negative').remove();
+      document.getElementById('negative').remove();
     } else if (document.getElementById('positive') !== null) {
-        document.getElementById('positive').remove();
+      document.getElementById('positive').remove();
     }
     const positiveFeedback = document.createElement('p');
     positiveFeedback.textContent = i18n.t(feedback.key);
@@ -19,13 +19,13 @@ const renderFeedback = (element, value, feedback, i18n) => {
     parent.append(positiveFeedback);
   } else {
     if (feedback.key !== 'feedback.networkError') {
-        element.classList.add('is-invalid');
+      element.classList.add('is-invalid');
     }
 
     if (document.getElementById('positive') !== null) {
-        document.getElementById('positive').remove();
+      document.getElementById('positive').remove();
     } else if (document.getElementById('negative') !== null) {
-        document.getElementById('negative').remove();
+      document.getElementById('negative').remove();
     }
     const negativeFeedback = document.createElement('p');
     negativeFeedback.textContent = i18n.t(feedback.key);
@@ -106,14 +106,14 @@ const renderFeedsAndPosts = (state, i18n) => {
 const renderModal = (posts, id, i18n) => {
   const post = posts.find((item) => item.id === id);
   const modalTitle = document.getElementById('modalLabel');
-    modalTitle.textContent = post.title;
-    const modalBody = document.querySelector('.modal-body');
-    modalBody.textContent = post.description;
-    const buttonReadMore = document.getElementById('readMore');
-    buttonReadMore.setAttribute('href', post.link);
-    buttonReadMore.textContent = i18n.t('modalButtons.readMore');
-    const buttonClose = document.getElementById('close');
-    buttonClose.textContent = i18n.t('modalButtons.close');
+  modalTitle.textContent = post.title;
+  const modalBody = document.querySelector('.modal-body');
+  modalBody.textContent = post.description;
+  const buttonReadMore = document.getElementById('readMore');
+  buttonReadMore.setAttribute('href', post.link);
+  buttonReadMore.textContent = i18n.t('modalButtons.readMore');
+  const buttonClose = document.getElementById('close');
+  buttonClose.textContent = i18n.t('modalButtons.close');
 };
 
 export { renderFeedback, renderFeedsAndPosts, renderModal };

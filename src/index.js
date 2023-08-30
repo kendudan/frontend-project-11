@@ -53,25 +53,48 @@ yup.setLocale({
 
 let shema = yup.string().url().required().notOneOf(state.rssForm.channels);
 
+const handleProcessState = (element, processState) => {
+  switch (processState) {
+    case 'sent':
+      watchedState.rssForm.feedback = { key: 'feedback.loaded' };
+      break;
+
+    case 'error':
+      element.disabled = false;
+      break;
+
+    case 'sending':
+      element.disabled = true;
+      break;
+
+    case 'filling':
+      element.disabled = false;
+      break;
+
+    default:
+      throw new Error(`Unknown process state: ${processState}`);
+  }
+};
+
 const watchedState = onChange(state, (path, value) => {
-  const valid = state.rssForm.valid;
+  const { valid } = state.rssForm.valid;
   switch (path) {
-      case 'rssForm.feedback':
-        renderFeedback(input, valid, value, i18nInstance);
-        break;
-      case 'rssForm.channels':
-        shema = yup.string().url().required().notOneOf(state.rssForm.channels);
-        break;
-      case 'parsedData.posts':
-      case 'viewedPosts':
-        renderFeedsAndPosts(state, i18nInstance);
-        break;
-      case 'rssForm.processState':
-        handleProcessState(submitButton, value);
-        break;
-      default:
-        break;
-    }
+    case 'rssForm.feedback':
+      renderFeedback(input, valid, value, i18nInstance);
+      break;
+    case 'rssForm.channels':
+      shema = yup.string().url().required().notOneOf(state.rssForm.channels);
+      break;
+    case 'parsedData.posts':
+    case 'viewedPosts':
+      renderFeedsAndPosts(state, i18nInstance);
+      break;
+    case 'rssForm.processState':
+      handleProcessState(submitButton, value);
+      break;
+    default:
+      break;
+  }
 });
 
 const prepareData = (url) => {
@@ -120,29 +143,6 @@ const updateData = (channels) => {
     .catch(console.error)
   );
   Promise.all(promises).finally(() => setTimeout(() => updateData(state.rssForm.channels), 5000));
-};
-
-const handleProcessState = (element, processState) => {
-  switch (processState) {
-    case 'sent':
-      watchedState.rssForm.feedback = { key: 'feedback.loaded' };
-      break;
-
-    case 'error':
-      element.disabled = false;
-      break;
-
-    case 'sending':
-      element.disabled = true;
-      break;
-
-    case 'filling':
-      element.disabled = false;
-      break;
-
-    default:
-      throw new Error(`Unknown process state: ${processState}`);
-  }
 };
 
 const handleSubmit = (e) => {

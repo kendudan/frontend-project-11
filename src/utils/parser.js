@@ -18,9 +18,9 @@ export default (loadedData) => {
   const posts = Array.from(parsedData.querySelectorAll('item'))
   .map((item) => (
     {
-        title: item.querySelector('title').textContent,
-        link: item.querySelector('link').textContent,
-        description: item.querySelector('description').textContent,
+      title: item.querySelector('title').textContent,
+      link: item.querySelector('link').textContent,
+      description: item.querySelector('description').textContent,
     }
   ));
 

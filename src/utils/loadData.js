@@ -6,4 +6,4 @@ export default (url) => {
   base.searchParams.set('disableCache', 'true');
   base.searchParams.set('url', searchURL);
   return axios.get(base);
-}
+};
