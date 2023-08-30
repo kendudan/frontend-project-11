@@ -132,8 +132,8 @@ const updateData = (channels) => {
       const loadedPosts = state.parsedData.posts.filter((post) => post.feedId === feedForUpdate.id);
       const newPosts = _.differenceBy(posts, loadedPosts, 'link');
       if (newPosts.length !== 0) {
-        newPosts.map((post) => { post.id = _.uniqueId, post.feedId = feedForUpdate.id });
-        watchedState.parsedData.posts = [...newPosts, ...watchedState.parsedData.posts];
+        const mappedNewPosts = newPosts.map((post) => ({ ...post, id: _.uniqueId, feedId: feedForUpdate.id }));
+        watchedState.parsedData.posts = [...mappedNewPosts, ...watchedState.parsedData.posts];
       }
     })
     .catch(console.error));
@@ -156,8 +156,8 @@ const handleSubmit = (e) => {
     .catch((err) => {
       watchedState.rssForm.valid = false;
       watchedState.rssForm.processState = 'error';
-      console.log(err);
-      watchedState.rssForm.feedback = err.errors[0];
+      const [error] = err.errors;
+      watchedState.rssForm.feedback = error;
     });
 
   setTimeout(() => updateData(state.rssForm.channels), 5000);
