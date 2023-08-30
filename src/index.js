@@ -101,14 +101,14 @@ const prepareData = (url) => {
     .then((response) => {
       const [feed, posts] = parseData(response);
       feed.id = _.uniqueId();
-      posts.map((post) => ({ ...post, id: _.uniqueId(), feedId: feed.id }));
-      if (_.isEmpty(feed) && posts.length === 0) {
+      const newPosts = posts.map((post) => ({ ...post, id: _.uniqueId(), feedId: feed.id }));
+      if (_.isEmpty(feed) && newPosts.length === 0) {
         watchedState.rssForm.valid = false;
-      } else if (!_.isEmpty(feed) && posts.length !== 0) {
+      } else if (!_.isEmpty(feed) && newPosts.length !== 0) {
         watchedState.rssForm.valid = true;
         watchedState.rssForm.processState = 'sent';
         watchedState.parsedData.feeds = [feed, ...watchedState.parsedData.feeds];
-        watchedState.parsedData.posts = [...posts, ...watchedState.parsedData.posts];
+        watchedState.parsedData.posts = [...newPosts, ...watchedState.parsedData.posts];
       }
       watchedState.rssForm.channels.push(state.rssForm.value);
       watchedState.rssForm.processState = 'filling';
